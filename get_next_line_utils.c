@@ -6,91 +6,93 @@
 /*   By: mobushi <mobushi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 23:02:18 by mobushi           #+#    #+#             */
-/*   Updated: 2022/09/20 21:49:41 by mobushi          ###   ########.fr       */
+/*   Updated: 2022/09/23 21:59:42 by mobushi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "get_next_line.h"
-	
-char *ft_free(char * original, char*add)
+
+void	*ft_calloc(size_t count, size_t size)
 {
-	char *tmp;
-	tmp = ft_strjoin(original,add);
-	free(original);
-	//printf("THISIS%s\n",tmp);
-	return(tmp);
+	void	*tmp;
+
+	if (size > 0 && count > SIZE_MAX / size)
+		return (NULL);
+	if (count == 0 || size == 0)
+	{
+		count = 1;
+		size = 1;
+	}
+	tmp = malloc(count * size);
+	if (tmp == NULL)
+		return (NULL);
+	ft_memset (tmp, 0, size * count);
+	return (tmp);
 }
 
-//open file and count words in bufsize, convert them into static char by using malloc
-char *ft_read_file(int fd, char * buf)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	size_t i;
-	int judge;
+	char	*tmp;
+	size_t	i;
+	size_t	j;
+	size_t	k;
+
+	k = 0;
+	if (s1 == NULL || s2 == NULL)
+		return (NULL);
+	i = ft_strlen(s1);
+	j = ft_strlen(s2);
+	tmp = (char *)malloc(sizeof(char) * (i + j + 1));
+	if (tmp == NULL)
+		return (NULL);
+	while (k < i)
+	{
+		tmp[k] = ((char *)s1)[k];
+		k++;
+	}
+	while (k < i + j)
+	{
+		tmp[k] = ((char *)s2)[k - i];
+		k++;
+	}
+	tmp[k] = '\0';
+	return (tmp);
+}
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
 
 	i = 0;
-	char *tmp;
-	char *output;
-
-	if (!buf)
-		buf = ft_calloc(1, 1);
-	tmp = ft_calloc(BUFFER_SIZE + 1,sizeof(char));
-	
-
-	judge = 1;
-	while(judge > 0)//increment to eof
-	{	
-		
-		judge = read(fd,tmp,BUFFER_SIZE);
-		
-		if(judge < 0)
-			{
-			free(tmp);
-			return(NULL);
-			}
-
-		printf("%d\n",judge);
-		printf("buf : %s\n",buf);
-		printf("tmp : %s\n",tmp);
-		buf = ft_free(buf,tmp);
-
-		if(ft_strchr(buf,'\n'))
-			break;
-		
-		i++;
-	}
-	return(buf);
-}
-
-
-char *get_next_line(int fd)
-{
-	static char *buf;
-
-	buf = ft_read_file(fd,buf);
-	return(buf);
-}
-
-int	main(void)
-{
-	char	*line;
-
-	int		i;
-	int		fd1;
-	fd1 = open("test.txt", O_RDONLY);
-	i = 1;
-	while (i < 7)
+	while (s[i] != '\0')
 	{
-		line = get_next_line(fd1);
-		printf("line [%d]: %s", i, line);
-		free(line);
 		i++;
 	}
-	close(fd1);
-
-
-	
-	return (0);
+	return (i);
 }
 
+void	*ft_memset(void *buf, int ch, size_t n)
+{
+	unsigned char	*tmp;
+	unsigned char	c;
+
+	tmp = (unsigned char *)buf;
+	c = (unsigned char)ch;
+	while (n > 0)
+	{
+		*tmp++ = c;
+		n--;
+	}
+	return (buf);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	while (*s != (char)c)
+	{
+		if (*s == '\0')
+			return (NULL);
+		s++;
+	}
+	return ((char *)s);
+}
